@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { login } from "../../services/userService";
 
 const schema = z.object({
   email: z.string().email({ message: "Enter valid email adress" }).min(1),
@@ -18,9 +19,20 @@ const LoginPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({ resolver: zodResolver(schema) });
-  console.log(errors);
 
-  const onSubmit = (data) => console.log(data);
+  const [formErrors, setFormErrors] = useState("");
+
+  const onSubmit = async (data) => {
+    try {
+      await login(data);
+      // redirect and refresh to home page after login
+      window.location = "/";
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        setFormErrors(error.response.data.message);
+      }
+    }
+  };
 
   return (
     <section className="align_center form_page">
@@ -58,6 +70,7 @@ const LoginPage = () => {
               <em className="form_error">{errors.password.message}</em>
             )}
           </div>
+          {formErrors && <em className="form_error">{formErrors}</em>}
 
           <button type="submit" className="search_button form_submit">
             Submit

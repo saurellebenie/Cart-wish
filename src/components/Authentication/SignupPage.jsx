@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { signup } from "../../services/userService";
 
 const schema = z.object({
   name: z.string().min(3, { message: "Name should be at least 3 characters." }),
@@ -28,9 +29,20 @@ const SignupPage = () => {
   } = useForm({ resolver: zodResolver(schema) });
   const [profilePic, setProfilePic] = useState(null);
 
-  console.log(profilePic);
+  const [formError, setError] = useState("");
 
-  const onSubmit = (data) => console.log("  data", data);
+  const onSubmit = async (data) => {
+    try {
+      await signup(data, profilePic);
+      // redirect and refresh to home page after signup
+      window.location = "/";
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        setError(error.response.data.message);
+      }
+      throw error;
+    }
+  };
 
   return (
     <section className="align_center form_page">
@@ -132,6 +144,7 @@ const SignupPage = () => {
             )}
           </div>
         </div>
+        {formError && <em className="form_error">{formError}</em>}
 
         <button className="search_button form_submit" type="submit">
           Submit
