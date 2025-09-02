@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { signup } from "../../services/userService";
+import { getUser, signup } from "../../services/userService";
+import { Navigate } from "react-router-dom";
 
 const schema = z.object({
   name: z.string().min(3, { message: "Name should be at least 3 characters." }),
@@ -43,6 +44,10 @@ const SignupPage = () => {
       throw error;
     }
   };
+
+  if (getUser()) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <section className="align_center form_page">

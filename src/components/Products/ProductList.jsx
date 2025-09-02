@@ -1,38 +1,26 @@
 import React, { use, useEffect, useState } from "react";
 import "./ProductList.css";
 import ProductCard from "./ProductCard";
-import useData from "../../hooks/useData";
 import ProductCardSkeleton from "./ProductCardSkeleton";
 import { useSearchParams } from "react-router-dom";
-import Pagination from "../Common/Pagination";
-import { set } from "zod/v4-mini";
+import useProductList from "../../hooks/useProductList";
 
 const ProductList = () => {
   const [search, setSeacrh] = useSearchParams();
-  const [page, setPage] = useState(1);
+
   const category = search.get("category");
+  const searchQuery = search.get("search");
+  const [sortBy, setSortBy] = useState("");
+  const [sortValue, setSortValue] = useState([]);
 
-  const { data, error, isLoading } = useData(
-    "/products",
-    {
-      params: {
-        category,
-        perPage: 10,
-        page,
-      },
-    },
-    [category, page]
-  );
-
-  useEffect(() => {
-    setPage(1);
-  }, [category]);
+  const { data, error, isFetching, hasNextPage, fetchNextPage } =
+    useProductList({
+      search: searchQuery,
+      category,
+      perPage: 10,
+    });
 
   const skeletons = [1, 2, 3, 4, 5, 6, 7, 8];
-  const handleChange = (page) => {
-    const currentParams = Object.fromEntries([...search]);
-    setSeacrh({ ...currentParams, page: parseInt(currentParams.page) + 1 });
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,24 +28,45 @@ const ProductList = () => {
         document.documentElement;
       if (
         scrollTop + clientHeight >= scrollHeight - 1 &&
-        !isLoading &&
-        data &&
-        page < data.totalPages
+        hasNextPage &&
+        isFetching &&
+        data
       ) {
-        console.log("reached bottom", page);
-        setPage((prev) => prev + 1);
+        fetchNextPage();
       }
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [data, isLoading]);
+  }, [data, isFetching]);
+
+  useEffect(() => {
+    if (data && data.pages) {
+      const products = data.pages.flatMap((page) => page.products);
+      if (sortBy === "price desc") {
+        setSortValue(products.sort((a, b) => b.price - a.price));
+      } else if (sortBy === "price asc") {
+        setSortValue(products.sort((a, b) => a.price - b.price));
+      } else if (sortBy === "rate desc") {
+        setSortValue(products.sort((a, b) => b.reviews.rate - a.reviews.rate));
+      } else if (sortBy === "rate asc") {
+        setSortValue(products.sort((a, b) => a.reviews.rate - b.reviews.rate));
+      } else setSortValue(products);
+    }
+  }, [sortBy, data]);
+
+  console.log(sortValue, hasNextPage, isFetching);
 
   return (
     <section className="products_list_section">
       <header className="align_center product_list_header">
         <h2>Products List</h2>
-        <select name="sort" className="products_sorting" id="">
+        <select
+          name="sort"
+          className="products_sorting"
+          id=""
+          onChange={(e) => setSortBy(e.target.value)}
+        >
           <option value="">Relevance</option>
           <option value="price desc">Price HIGH TO LOW</option>
           <option value="price asc">Price LOW TO HIGH</option>
@@ -68,30 +77,14 @@ const ProductList = () => {
 
       <div className="products_list">
         {error && <em className="form_error">{error}</em>}
-        {data?.products &&
-          data.products.map((product) => (
-            <ProductCard
-              key={product._id}
-              id={product._id}
-              price={product.price}
-              rating={product.reviews.rate}
-              ratingCounts={product.reviews.count}
-              stock={product.stock}
-              title={product.title}
-              image={product.images[0]}
-            />
-          ))}
-        {isLoading &&
+
+        {sortValue.map((product) => (
+          <ProductCard key={product._id} product={product} />
+        ))}
+
+        {isFetching &&
           skeletons.map((skeleton) => <ProductCardSkeleton key={skeleton} />)}
       </div>
-      {/* {data && (
-        <Pagination
-          totalPosts={data.totalProducts}
-          postsPerPage={8}
-          onClick={handleChange}
-          currentPage={page}
-        />
-      )} */}
     </section>
   );
 };

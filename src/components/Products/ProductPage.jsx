@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import "./ProductPage.css";
 import ProductSideBar from "./ProductSideBar";
 import ProductList from "./ProductList";
@@ -12,4 +12,4 @@ const ProductPage = () => {
   );
 };
 
-export default ProductPage;
+export default memo(ProductPage);

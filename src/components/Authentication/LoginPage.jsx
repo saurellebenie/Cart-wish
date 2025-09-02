@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { login } from "../../services/userService";
+import { getUser, login } from "../../services/userService";
+import { Navigate, useLocation } from "react-router-dom";
 
 const schema = z.object({
   email: z.string().email({ message: "Enter valid email adress" }).min(1),
@@ -21,18 +22,23 @@ const LoginPage = () => {
   } = useForm({ resolver: zodResolver(schema) });
 
   const [formErrors, setFormErrors] = useState("");
+  const location = useLocation();
 
   const onSubmit = async (data) => {
     try {
       await login(data);
       // redirect and refresh to home page after login
-      window.location = "/";
+      const { state } = location;
+      window.location = state ? state.form : "/";
     } catch (error) {
       if (error.response && error.response.status === 400) {
         setFormErrors(error.response.data.message);
       }
     }
   };
+  if (getUser()) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <section className="align_center form_page">
