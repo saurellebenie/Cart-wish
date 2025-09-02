@@ -9,6 +9,8 @@ import useData from "../../hooks/useData";
 import CartContext from "../../contexts/cartContext";
 import UserContext from "../../contexts/userContext";
 
+import config from "../../config.json";
+
 const ProductCard = ({ product }) => {
   const { addToCart } = useContext(CartContext);
   const user = useContext(UserContext);
@@ -17,7 +19,7 @@ const ProductCard = ({ product }) => {
       <div className="product_image">
         <NavLink to={`/product/${product?._id}`}>
           <img
-            src={`http://localhost:5000/products/${product?.images[0]}`}
+            src={`${config.backendURL}/${product?.images[0]}`}
             alt="product image"
           />
         </NavLink>

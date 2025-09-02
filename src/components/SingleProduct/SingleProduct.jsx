@@ -8,6 +8,8 @@ import Loader from "../Common/Loader";
 import CartContext from "../../contexts/cartContext";
 import UserContext from "../../contexts/userContext";
 
+import config from "../../config.json";
+
 const SingleProductPage = () => {
   const { addToCart } = useContext(CartContext);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -29,7 +31,7 @@ const SingleProductPage = () => {
             <div className="single_product_thumbnails">
               {product?.images.map((image, index) => (
                 <img
-                  src={`http://localhost:5000/products/${image}`}
+                  src={`${config.backendURL}/products/${image}`}
                   alt={product.title}
                   className={selectedImage === index ? "selected_image" : ""}
                   onClick={() => setSelectedImage(index)}
@@ -38,7 +40,7 @@ const SingleProductPage = () => {
               ))}
             </div>
             <img
-              src={`http://localhost:5000/products/${product.images[selectedImage]}`}
+              src={`${config.backendURL}/products/${product.images[selectedImage]}`}
               alt={product.title}
               className="single_product_display"
             />
