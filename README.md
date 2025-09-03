@@ -22,4 +22,4 @@
 - Caching: Optimized API call reduction.
 - Pagination: Display large data sets efficiently.
 
-  https://x-cartwix.netlify.app/
+ # https://x-cartwix.netlify.app/
