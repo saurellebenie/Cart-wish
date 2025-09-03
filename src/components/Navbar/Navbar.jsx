@@ -56,7 +56,7 @@ const Navbar = () => {
       if (search.trim() !== "") {
         getSugegestionsAPI(search)
           .then((res) => setSuggestions(res.data))
-          .catch((err) => console.log(err));
+          .catch(err);
       } else {
         setSuggestions([]);
       }

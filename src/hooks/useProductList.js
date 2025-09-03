@@ -6,6 +6,7 @@ const useProductList = (query) => {
     apiClient
       .get("/products", { params: { ...query, page: pageParam } })
       .then((res) => res.data);
+
   return useInfiniteQuery({
     queryKey: ["product", query],
     queryFn: fetchFunction,

@@ -41,8 +41,6 @@ const App = () => {
     try {
       const jwtUser = getUser();
       if (Date.now >= jwtUser.exp * 1000) {
-        console.log("hello");
-
         localStorage.removeItem("token");
         location.reload();
       } else {
@@ -78,8 +76,6 @@ const App = () => {
         { id },
         {
           onError: (err) => {
-            console.log(err);
-
             toast.error("Something Went Wrong!");
             setCart(cart);
           },
@@ -108,8 +104,6 @@ const App = () => {
         { id, type },
         {
           onError: (err) => {
-            console.log(err);
-
             toast.error("Something Went Wrong!");
             setCart(oldCart);
           },

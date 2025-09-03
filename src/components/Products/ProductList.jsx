@@ -24,25 +24,27 @@ const ProductList = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } =
+      const { scrollTop, clientHeight, scrollHeight } =
         document.documentElement;
       if (
         scrollTop + clientHeight >= scrollHeight - 1 &&
+        !isFetching &&
         hasNextPage &&
-        isFetching &&
         data
       ) {
+        console.log("Reached to Bottom!");
         fetchNextPage();
       }
     };
 
     window.addEventListener("scroll", handleScroll);
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, [data, isFetching]);
 
   useEffect(() => {
-    if (data && data.pages) {
-      const products = data.pages.flatMap((page) => page.products);
+    if (data && data?.pages) {
+      const products = data?.pages.flatMap((page) => page.products);
       if (sortBy === "price desc") {
         setSortValue(products.sort((a, b) => b.price - a.price));
       } else if (sortBy === "price asc") {
@@ -54,8 +56,6 @@ const ProductList = () => {
       } else setSortValue(products);
     }
   }, [sortBy, data]);
-
-  console.log(sortValue, hasNextPage, isFetching);
 
   return (
     <section className="products_list_section">

@@ -11,14 +11,14 @@ const Home = () => {
         subtitle="Experience the power of the latest iphone 14 with our most Pro camera ever."
         title="Buy iphone 14 Pro"
         image={iphone}
-        link="/product/68b1f4b72f8094560d1ca712"
+        link="/product/68b76ceb39fbd6ef5570143b"
       />
       <FeatureProducts />
       <HeroSection
         subtitle="You can add Studio and colour-matched Magic accessories to your bag after configure your Mac mini."
         title="Build the ultimate setup"
         image={mac}
-        link="/product/68b1f4b72f8094560d1ca71a"
+        link="/product/68b76cec39fbd6ef55701443"
       />
     </div>
   );
